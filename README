@@ -1,0 +1,118 @@
+# 🎮 Sync Steps
+
+A cooperative multiplayer puzzle platformer built for the web using **JavaScript** and **HTML Canvas**. Players must work together to solve puzzles, press buttons, unlock doors, and reach the goal.
+
+Inspired by the gameplay style of **Pico Park**, this project recreates similar cooperative mechanics in a browser-based environment.
+
+---
+
+# 🧠 Game Concept
+
+In **Sync Steps**, players must coordinate their actions to complete levels. Each level introduces new puzzle mechanics requiring timing, teamwork, and problem solving.
+
+Examples of mechanics include:
+
+- Cooperative buttons
+- Timed puzzles
+- Doors and goals
+- Player stacking
+- Moving platforms
+
+The main focus of the game is **synchronization and teamwork**.
+
+---
+
+# 🕹 Features
+
+- Multiplayer character control
+- Physics-based platform movement
+- Button puzzle mechanics
+- Timer-based puzzles
+- Level system
+- Main menu UI
+- Settings menu
+- Parallax clouds and animated background
+- Camera follow system
+- HTML Canvas rendering
+
+---
+
+# 🗂 Project Structure
+
+```
+assets/
+  images/
+    player/
+    door/
+    button/
+
+js/
+  game.js
+  physics.js
+  player.js
+  input.js
+  level.js
+  camera.js
+
+LevelLogic/
+  Level1.js
+  Level2.js
+  Level3.js
+  Level4.js
+  Level5.js
+
+index.html
+style.css
+README.md
+```
+
+---
+
+# 🎮 Controls
+
+| Key | Action |
+|-----|-------|
+| A / D | Move Player 1 |
+| W | Jump Player 1 |
+| Arrow Keys | Move Player 2 |
+| ↑ | Jump Player 2 |
+| ESC | Pause Menu |
+
+---
+
+# ▶️ Running the Game
+
+1. Open the project folder in **VS Code**
+2. Install the **Live Server** extension
+3. Right-click `index.html`
+4. Select **Open with Live Server**
+
+The game will launch in your browser.
+
+---
+
+# 🚀 Planned Features
+
+Future mechanics planned for the game:
+
+- Key and door puzzles
+- Teleport portals
+- Moving platform puzzles
+- Ice/slippery platforms
+- Online multiplayer support
+- Sound effects and music
+- Level progress saving
+
+---
+
+# 👨‍💻 Developer
+
+Created by **Om**.
+
+This project is an experimental cooperative puzzle platformer built while learning JavaScript game development.
+
+---
+
+# ⭐ Inspiration
+
+Inspired by the cooperative puzzle game **Pico Park** by TECOPARK.

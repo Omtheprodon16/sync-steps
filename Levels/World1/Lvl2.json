@@ -1,0 +1,55 @@
+{
+  "spawn": [
+    { "x": 80, "y": 260 },
+    { "x": 120, "y": 260 }
+  ],
+
+  "goal": { "x": 1450, "y": 380, "w": 40, "h": 40 },
+
+  "platforms": [
+
+    { "num": 1, "x": 0, "y": 340, "w": 260, "h": 40 },
+
+    { "num": 2, "x": 320, "y": 340, "w": 200, "h": 40 },
+
+    { "num": 3, "x": 580, "y": 340, "w": 260, "h": 40 },
+
+
+    { "num": 4, "x": 260, "y": 280, "w": 60, "h": 100 },
+
+
+    { "num": 5, "x": 460, "y": 260, "w": 120, "h": 30, "id": "break_platform", "breakable": true }
+    ,{ "num": 6, "x": 1020, "y": 550, "w": 980, "h": 30, "id": "extend_platform_6" },
+    { "num": 7, "x": 1300, "y": 420, "w": 700, "h": 150 },
+    { "num": 8, "x": 1190, "y": 550, "w": 120, "h": 30, "id": "lift_platform_2", "moving": true, "axis": "y", "range": 145, "speed": 2 }
+
+  ],
+  "buttons": [
+    {
+      "x": 637,
+      "y": 330,
+      "w": 30,
+      "h": 10,
+      "target": "break_platform"
+    }
+    ,
+    {
+      "x": 1099,
+      "y": 540,
+      "w": 30,
+      "h": 10,
+      "target": "extend_platform_6",
+      "extendLeft": 30,
+      "playersRequired": 1
+    }
+    ,
+    {
+      "x": 1330,
+      "y": 410,
+      "w": 30,
+      "h": 10,
+      "target": "lift_platform_2",
+      "playersRequired": 1
+    }
+  ]
+}

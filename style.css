@@ -1,0 +1,54 @@
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* PAGE BACKGROUND */
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* bright & playful background */
+  background: linear-gradient(
+    180deg,
+    #eaf6ff 0%,
+    #fffd71 100%
+  );
+
+  font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+/* GAME CONTAINER */
+.game-wrapper {
+  padding: 20px;
+  border-radius: 18px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.15),
+    inset 0 0 0 2px rgba(0, 0, 0, 0.05);
+}
+
+/* CANVAS */
+canvas {
+  display: block;
+
+  /* light sky-like background */
+  background: linear-gradient(
+    180deg,
+    #cfefff 0%,
+    #bde6ff 100%
+  );
+
+  border-radius: 14px;
+
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.2);
+
+  image-rendering: pixelated;
+}

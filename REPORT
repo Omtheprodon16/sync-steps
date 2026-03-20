@@ -1,0 +1,293 @@
+
+
+# Sync Steps – Developer Report
+
+## 1. Purpose of this Document
+
+This report explains the internal structure of the **Sync Steps** game project so that another developer can easily understand how the code works. It describes the purpose of each major file, how the systems interact, and what the important logic sections do.
+
+The goal is that a new editor can open the project and immediately understand:
+
+- Where the main game loop is
+- Where physics and collisions are handled
+- How players are controlled
+- How levels and puzzles work
+- How UI and menus are rendered
+
+---
+
+# 2. Overall Game Architecture
+
+The game follows a **modular JavaScript architecture**. Each major system is placed in a separate file so it can be edited independently.
+
+Main systems:
+
+Game Loop → Physics → Player → Level Logic → Rendering → UI
+
+Files are grouped by responsibility rather than by feature.
+
+---
+
+# 3. Main Game Loop (game.js)
+
+`game.js` is the central controller of the game.
+
+Responsibilities:
+
+- Starts the game
+- Runs the update loop
+- Draws everything to the canvas
+- Calls physics updates
+- Calls level logic
+
+The core loop follows the typical pattern:
+
+1. Read player input
+2. Update physics
+3. Run level-specific logic
+4. Update camera
+5. Render objects
+
+Typical structure:
+
+update() → update game state
+render() → draw game frame
+
+These functions run continuously using `requestAnimationFrame()`.
+
+---
+
+# 4. Player System (player.js)
+
+This file defines how players behave.
+
+Main responsibilities:
+
+- Player movement
+- Jump mechanics
+- Animation updates
+- Sprite handling
+
+Each player object contains properties such as:
+
+x → horizontal position
+y → vertical position
+vx → horizontal velocity
+vy → vertical velocity
+w → width
+h → height
+
+Movement is applied by modifying velocity values and then updating positions each frame.
+
+Example logic:
+
+if left key pressed → decrease vx
+if right key pressed → increase vx
+if jump pressed → set vy negative
+
+---
+
+# 5. Physics System (physics.js)
+
+This file handles all collision detection and gravity.
+
+Main features:
+
+- Gravity
+- Platform collision
+- Player stacking
+- Movement restrictions
+
+Each frame the system:
+
+1. Applies gravity to players
+2. Updates positions
+3. Checks collisions with platforms
+4. Resolves overlaps
+
+Collision detection is done using **axis aligned bounding boxes (AABB)**.
+
+Typical check:
+
+if player bottom >= platform top → player lands
+
+---
+
+# 6. Input System (input.js)
+
+Handles keyboard input.
+
+Tracks which keys are currently pressed using event listeners.
+
+Key events:
+
+keydown → mark key as pressed
+keyup → mark key as released
+
+Players read input states from this system each frame.
+
+---
+
+# 7. Camera System (camera.js)
+
+The camera follows the players so that the level scrolls.
+
+Responsibilities:
+
+- Track player position
+- Move viewport
+- Prevent camera from leaving level boundaries
+
+Camera logic typically centers between players or follows the main player.
+
+---
+
+# 8. Level System (level.js)
+
+This file loads level data and objects such as:
+
+platforms
+buttons
+doors
+walls
+
+Each level defines coordinates and sizes of objects.
+
+Example object structure:
+
+platform = {
+  x: 200,
+  y: 400,
+  width: 300,
+  height: 40
+}
+
+---
+
+# 9. Level Logic Files (LevelLogic folder)
+
+Each level has its own logic file:
+
+Level1.js
+Level2.js
+Level3.js
+Level4.js
+Level5.js
+
+This prevents the main game file from becoming too large.
+
+Each logic file typically exports a function such as:
+
+updateLevelX(gameState)
+
+This function runs every frame while the level is active.
+
+Example responsibilities:
+
+- checking button presses
+- opening doors
+- moving platforms
+- restarting puzzles
+
+---
+
+# 10. Timer Puzzle Logic
+
+Level 5 includes a timing challenge.
+
+Important variables:
+
+countdown → remaining seconds
+lastTick → last time the timer updated
+remainingMs → remaining time in milliseconds
+
+Logic flow:
+
+1. Timer counts down
+2. Players must press both buttons
+3. Allowed success window = 0.5 seconds
+4. If successful → door appears
+5. If too early or too late → level resets
+
+This logic ensures cooperative timing puzzles.
+
+---
+
+# 11. Rendering System
+
+Rendering uses the **HTML Canvas API**.
+
+The render function draws objects in order:
+
+1. Background
+2. Platforms
+3. Players
+4. Buttons
+5. Doors
+6. UI elements
+
+Sprites are drawn using `drawImage()`.
+
+---
+
+# 12. Menu System
+
+Menus are handled inside the main game file.
+
+Menu screens include:
+
+Main Menu
+Level Selection
+Settings
+Pause Screen
+
+Buttons detect mouse clicks and update the game state.
+
+---
+
+# 13. Assets
+
+All images are stored in the assets folder.
+
+Common asset groups:
+
+players
+buttons
+doors
+logo
+background
+
+Sprites are loaded before gameplay begins.
+
+---
+
+# 14. How to Extend the Game
+
+To add a new level:
+
+1. Create a new file in LevelLogic
+2. Define puzzle mechanics
+3. Add level layout in level.js
+4. Register level in the level list
+
+This modular design allows easy expansion.
+
+---
+
+# 15. Summary
+
+This project implements a cooperative puzzle platformer using JavaScript and HTML Canvas.
+
+Key architectural features:
+
+- Modular file structure
+- Separate physics system
+- Separate level logic
+- Canvas-based rendering
+- Expandable puzzle mechanics
+
+The structure allows developers to add new levels and mechanics without modifying core systems.
+
+---
+
+End of Developer Report

@@ -1,0 +1,477 @@
+# Sync Steps – Full Developer Documentation
+
+Author: Om  
+Project: Sync Steps (Pico‑Park‑style cooperative puzzle game)  
+Engine: JavaScript + HTML Canvas
+
+---
+
+# 1. Why This Document Exists
+
+This document explains **how the game works internally** so that another developer can open the project and understand the codebase without guessing.
+
+If you are a developer working on this project, this document should answer questions like:
+
+• Where the game loop is implemented  
+• How player movement works  
+• How collisions are handled  
+• How levels are structured  
+• Where puzzle logic lives  
+• Which file to edit for specific gameplay changes  
+
+If you get stuck while modifying the project, **this report should be the first place you check**.
+
+---
+
+# 2. High Level Architecture
+
+The game is divided into multiple systems. Each system has its own file so the project stays easy to maintain.
+
+System flow:
+
+Input System  
+  ↓  
+Player Logic  
+  ↓  
+Physics Engine  
+  ↓  
+Level Logic  
+  ↓  
+Camera System  
+  ↓  
+Rendering System
+
+All systems are coordinated by the **main game loop in game.js**.
+
+The goal of this architecture is to keep gameplay systems independent so new mechanics can be added without breaking existing code.
+
+---
+
+# 3. Game Loop Overview (game.js)
+
+The entire game runs inside a loop that repeats every frame using:
+
+requestAnimationFrame()
+
+Simplified structure:
+
+function gameLoop() {
+
+  update();
+
+  render();
+
+  requestAnimationFrame(gameLoop);
+
+}
+
+The loop runs roughly **60 times per second** depending on the browser.
+
+---
+
+# 4. Game Update Flow
+
+Each frame the game runs the following sequence.
+
+Game Update Flow
+
+Read Keyboard Input  
+  ↓  
+Update Player Movement  
+  ↓  
+Apply Gravity  
+  ↓  
+Resolve Collisions  
+  ↓  
+Run Level Logic  
+  ↓  
+Update Camera  
+  ↓  
+Draw Everything
+
+Understanding this flow is important when debugging gameplay behaviour.
+
+---
+
+# 5. Input System (input.js)
+
+This file tracks keyboard input.
+
+Two event listeners are used:
+
+keydown  
+keyup
+
+When a key is pressed the system records it inside an object:
+
+keys[key] = true
+
+When released:
+
+keys[key] = false
+
+Players read these values every frame.
+
+Example:
+
+if (keys["A"]) {  
+  move player left  
+}
+
+---
+
+# 6. Player System (player.js)
+
+This file controls player movement, jumping, and animation.
+
+Each player object contains:
+
+x → horizontal position  
+y → vertical position  
+vx → horizontal velocity  
+vy → vertical velocity  
+w → player width  
+h → player height
+
+Movement works by modifying velocity.
+
+Example logic:
+
+Press left → vx decreases  
+Press right → vx increases
+
+Jumping sets a negative vertical velocity.
+
+vy = -jumpForce
+
+Gravity then pulls the player back down.
+
+vy += gravity
+
+---
+
+# 7. Physics System (physics.js)
+
+The physics system is responsible for:
+
+• gravity  
+• platform collisions  
+• player blocking  
+• player stacking
+
+Collision detection uses **Axis Aligned Bounding Boxes (AABB)**.
+
+Collision condition example:
+
+playerRight > platformLeft  
+playerLeft < platformRight  
+playerBottom > platformTop  
+playerTop < platformBottom
+
+If a collision happens the player's position is corrected.
+
+Example:
+
+player.y = platform.y - player.h  
+player.vy = 0
+
+This prevents objects from overlapping.
+
+---
+
+# 8. Player Interaction Mechanics
+
+Players can interact with each other in two ways.
+
+Player Blocking
+
+Players cannot pass through each other horizontally.
+
+Player Stacking
+
+If one player lands on another player's head they stand on top of them.
+
+This mechanic allows puzzles that require vertical cooperation.
+
+---
+
+# 9. Camera System (camera.js)
+
+The camera determines what portion of the level is visible.
+
+camera.x  
+camera.y
+
+The camera generally follows player positions.
+
+camera.x = player.x - screenWidth / 2
+
+Camera boundaries prevent scrolling outside the level.
+
+---
+
+# 10. Level Layout System (level.js)
+
+Level layout defines the physical structure of the level.
+
+Objects stored here include:
+
+platforms  
+walls  
+buttons  
+spawn points
+
+Example platform object:
+
+{  
+  x: 200,  
+  y: 420,  
+  width: 300,  
+  height: 40  
+}
+
+These objects are loaded into arrays when a level starts.
+
+---
+
+# 11. Level Logic System (LevelLogic Folder)
+
+Each level has its own logic file.
+
+Example files:
+
+Level1.js  
+Level2.js  
+Level3.js  
+Level4.js  
+Level5.js
+
+Each file exports a function like:
+
+updateLevel5(gameState)
+
+This function runs **every frame** while the level is active.
+
+Keeping level logic separate prevents game.js from becoming too large.
+
+---
+
+# 12. Button System
+
+Buttons are interactive puzzle elements.
+
+A button becomes active when a player's hitbox overlaps it.
+
+Typical check:
+
+if player overlaps button  
+  buttonPressed = true
+
+Buttons can trigger different behaviours.
+
+Examples:
+
+Remove wall  
+Break platform  
+Move platform  
+Open door
+
+---
+
+# 13. Timer Puzzle (Level 5)
+
+Level 5 introduces a cooperative timing challenge.
+
+Important variables:
+
+countdown  
+lastTick  
+remainingMs
+
+The timer counts down from **10 seconds**.
+
+Players must press both buttons within a small timing window.
+
+Allowed success window:
+
+0.5 seconds → 0.0 seconds
+
+If both players press within this window:
+
+Timer stops  
+Door appears
+
+If players press too early or too late:
+
+Level resets
+
+---
+
+# 14. Rendering System
+
+Rendering uses the HTML Canvas API.
+
+Objects are drawn using:
+
+ctx.drawImage()
+
+Draw order is very important.
+
+Rendering order:
+
+1 Background  
+2 Platforms  
+3 Buttons  
+4 Doors  
+5 Players  
+6 UI
+
+Incorrect ordering can cause objects to appear in front of others incorrectly.
+
+---
+
+# 15. Menu System
+
+Menus are handled inside the main game file.
+
+Game states control what screen is shown.
+
+Example states:
+
+STATE_MENU  
+STATE_PLAYING  
+STATE_PAUSED  
+STATE_LEVEL_SELECT
+
+Clicking buttons changes the current state.
+
+---
+
+# 16. Asset Structure
+
+All art assets are stored in the assets folder.
+
+assets/images/player  
+assets/images/button  
+assets/images/door  
+assets/images/background
+
+Sprites are loaded when the game initializes.
+
+---
+
+# 17. Common Editing Locations
+
+If you need to modify something specific, use this guide.
+
+Change player movement  
+Edit → player.js
+
+Change collision behaviour  
+Edit → physics.js
+
+Modify level layout  
+Edit → level.js
+
+Add new puzzle logic  
+Edit → LevelLogic files
+
+Change camera behaviour  
+Edit → camera.js
+
+Modify UI  
+Edit → game.js
+
+---
+
+# 18. Debugging Guide
+
+If something breaks, check these locations.
+
+Player falling through platforms  
+Check physics.js
+
+Buttons not activating  
+Check LevelLogic file
+
+Camera moving incorrectly  
+Check camera.js
+
+Game freezing  
+Check update loop in game.js
+
+Door not appearing  
+Check level logic conditions
+
+---
+
+# 19. Adding New Levels
+
+To create a new level:
+
+1 Define layout in level.js  
+2 Create logic file in LevelLogic folder  
+3 Register the level inside the level list  
+4 Add puzzle mechanics inside updateLevel function
+
+This modular system allows new mechanics to be added easily.
+
+---
+
+# 20. Future Expansion Notes
+
+Planned mechanics that can be implemented easily with the current architecture:
+
+Key and door puzzles  
+Moving platforms  
+Teleport portals  
+Ice platforms  
+Online multiplayer  
+Sound system
+
+---
+
+# 21. Final Notes
+
+This project was intentionally structured so the gameplay systems are separated.
+
+Because of this, new developers should be able to understand the code quickly and safely modify individual systems without affecting others.
+
+If anything in the project behaves unexpectedly, start by tracing the flow:
+
+Input → Player → Physics → Level Logic → Render
+
+---
+
+# 22. Code Conventions and Development Rules
+
+To keep the project stable and maintainable, follow these development rules when modifying the codebase.
+
+Do not break the system separation. Each major system has its own file and should remain independent.
+
+Rules developers should follow:
+
+1. **Do not place level logic inside game.js**  
+All puzzle mechanics should live inside the LevelLogic files. This keeps the main game loop clean.
+
+2. **Do not modify physics behaviour inside level logic**  
+Physics behaviour should only be edited in `physics.js`.
+
+3. **Player hitbox changes must also update physics checks**  
+If the player width or height is modified in `player.js`, collision logic in `physics.js` must be verified.
+
+4. **New puzzles should always be implemented as level logic**  
+Avoid hardcoding puzzle behaviour directly in rendering or player files.
+
+5. **Rendering code should not contain gameplay logic**  
+The render phase should only draw objects. Game mechanics must happen during the update phase.
+
+6. **Asset paths must stay organized inside the assets folder**  
+New images should be added to the correct subfolder (player, button, door, etc.).
+
+7. **Avoid editing camera behaviour unless necessary**  
+Camera bugs can easily break level navigation.
+
+Following these rules will prevent unexpected bugs and keep the architecture clean for future developers.
+
+End of Developer Documentation
